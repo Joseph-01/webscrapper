@@ -7,7 +7,9 @@ const url: string = `https://www.thedevotionals.com.ng/devotional/rhapsody-of-re
 async function crawler(url) {
   const response = await axios.get(url)
   const html = await response.data
-  console.log(html);
+  const $ = cheerio.load(html);
+  const links = $('a').map((i, link) => link.attribs.href).get();
+  console.log(links);
 }
 
 crawler(url)
