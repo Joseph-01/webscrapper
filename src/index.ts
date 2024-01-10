@@ -1,49 +1,37 @@
 import * as cheerio from "cheerio";
 import axios from "axios";
+import { day, dayToReturn } from "./middlewares/today";
+import { findLinkWithWord } from "./middlewares/findLink";
 
+const url: string = `https://www.thedevotionals.com.ng/devotional/rhapsody-of-realities/`;
 
-// Get current date
-var today = new Date();
-
-// Define days of the week
-var daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-
-// Get the day of the week (0-6)
-var dayOfWeek = today.getDay();
-
-// Get day, month, and year
-var day = today.getDate();
-var month = today.getMonth() + 1; // Months are zero-indexed, so add 1
-var year = today.getFullYear();
-
-// Function to get the month name
-function getMonthName(month) {
-  var monthNames = [
-    'January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December'
-  ];
-  return monthNames[month - 1];
-}
-
-var formattedDate = daysOfWeek[dayOfWeek]
-var formattedmonth =  getMonthName(month)
-var formattedDay = day;
-var formattedYear = year;
-
-
-
-
-const url: string =
-  `https://www.thedevotionals.com.ng/rhapsody-of-realities-for-${formattedDate.toLocaleLowerCase()}-${formattedDay}th-${formattedmonth.toLocaleLowerCase()}-2023`;
-
-async function crawler(url) {
-  const response = await axios.get(url);
-  const html = response.data;
+async function scrapper() {
+  const urltoscrape = await crawler(url);
+  const response = await axios.get(urltoscrape);
+  const html = await response.data;
   const $ = cheerio.load(html);
-  $("p", html).each(function () {
-    const tes = $(this).text();
-    console.log(tes);
+  const d = [];
+
+  $("p").each((i, li) => {
+    d.push($(li).text());
   });
 }
 
-crawler(url)
+async function crawler(url) {
+  try {
+    const response = await axios.get(url);
+    const html = await response.data;
+    const $ = cheerio.load(html);
+    const links = $("a")
+      .map((i, link) => link.attribs.href)
+      .get()
+      .slice(-82);
+    const result = findLinkWithWord(links, `${dayToReturn(day)}`);
+    return result;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+scrapper();
+// crawler(url)
