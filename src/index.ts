@@ -1,6 +1,6 @@
 import * as cheerio from "cheerio";
 import axios from "axios";
-import { day, dayToReturn, } from "./middlewares/today";
+import { day, dayToReturn } from "./middlewares/today";
 import { findLinkWithWord } from "./middlewares/findLink";
 
 const url: string = `https://www.thedevotionals.com.ng/devotional/rhapsody-of-realities/`;
@@ -15,8 +15,6 @@ async function scrapper() {
   $("p").each((i, li) => {
     d.push($(li).text());
   });
-  // console.log(urltoscrape)
-  console.log(d);
 }
 
 async function crawler(url) {
@@ -29,10 +27,9 @@ async function crawler(url) {
       .get()
       .slice(-82);
     const result = findLinkWithWord(links, `${dayToReturn(day)}`);
-    console.log(result);
     return result;
   } catch (error) {
-    console.log(error)
+    console.log(error);
   }
 }
 
