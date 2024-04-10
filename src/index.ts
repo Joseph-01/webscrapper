@@ -11,10 +11,11 @@ async function scrapper() {
   const html = await response.data;
   const $ = cheerio.load(html);
   const d = [];
-
+  //console.log(d)
   $("p").each((i, li) => {
     d.push($(li).text());
   });
+  console.log(d);
 }
 
 async function crawler(url) {
@@ -27,6 +28,7 @@ async function crawler(url) {
       .get()
       .slice(-82);
     const result = findLinkWithWord(links, `${dayToReturn(day)}`);
+    console.log(result);
     return result;
   } catch (error) {
     console.log(error);
